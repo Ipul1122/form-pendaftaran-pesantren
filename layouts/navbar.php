@@ -28,6 +28,9 @@ $link_status  = $is_user_dir ? 'statusUserPendaftaran.php' : 'user/statusUserPen
                 <li class="nav-item">
                     <a class="nav-link" href="<?= $link_status ?>">Status</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= $is_user_dir ? 'kategori.php' : 'user/kategori.php' ?>">Kategori</a>
+                </li>
             </ul>
         </div>
     </div>
