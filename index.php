@@ -32,6 +32,8 @@
                 <li>Ukuran file maksimal 5MB.</li>
                 <li>Kami hanya menerima pendaftaran sekitar <b>40 Anak</b></li>
                 <li>Link pendaftaran ditutup pada <b>Jumat, 06 Maret 2026</b></li>
+                <li>Pesantren Dilaksanakan pada <b>Sabtu, 07 Maret 2026 Pukul 16:00 WIB</b></li>
+                <li>Lokasi <b>Masjid Nurul Haq</b></li>
                 <li>Adapun Infaq yang diperlukan sebesar <b>Rp 20.000</b></li>
             </ul>
 
@@ -43,6 +45,16 @@
                 <li>Dibolehkan Membawa Alat Tulis & Alat Mandi</li>
                 <li>Dibolehkan Membawa Bantal, Guling, Selimut</li>
                 <li>Diwajibkan Membawa <b>Salinan Baju Ganti</b></li>
+                <li>Jika ada yang ingin ditanyakan Hub
+                    <br>
+                    <a href="https://wa.me/6285693672730" class="btn btn-success mt-2">
+                        📞 Hubungi Kak Syaiful
+                    </a>
+                    <a href="https://wa.me/6281959269130" class="btn btn-success mt-2">
+                        📞 Hubungi Kak Zidan
+                    </a>
+
+                </li>
             </ul>
 
             <hr class="my-4">

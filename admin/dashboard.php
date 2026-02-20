@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 require_once '../config/config.php';
 
-// Menghitung jumlah data berdasarkan status
+// 1. Menghitung jumlah data berdasarkan status secara umum
 $query_count = "SELECT 
                     SUM(CASE WHEN status = 'diterima' THEN 1 ELSE 0 END) as total_diterima,
                     SUM(CASE WHEN status = 'proses' THEN 1 ELSE 0 END) as total_proses,
@@ -20,6 +20,25 @@ $diterima = $data_count['total_diterima'] ?? 0;
 $proses = $data_count['total_proses'] ?? 0;
 $ditolak = $data_count['total_ditolak'] ?? 0;
 $total = $data_count['total_pendaftar'] ?? 0;
+
+// 2. Menghitung jumlah pendaftar berdasarkan kelas
+// Diurutkan secara spesifik dari 3 SD sampai 3 SMP
+$query_kelas = "SELECT kelas, COUNT(*) as jumlah 
+                FROM pendaftar 
+                GROUP BY kelas 
+                ORDER BY FIELD(kelas, '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP')";
+$result_kelas = $conn->query($query_kelas);
+
+// Masukkan data hasil query ke dalam array agar mudah dipanggil
+$data_kelas = [];
+if ($result_kelas) {
+    while ($row = $result_kelas->fetch_assoc()) {
+        $data_kelas[$row['kelas']] = $row['jumlah'];
+    }
+}
+
+// Daftar urutan kelas standar untuk ditampilkan (memastikan kelas yang 0 pendaftar tetap muncul)
+$semua_kelas = ['3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP'];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -80,12 +99,43 @@ $total = $data_count['total_pendaftar'] ?? 0;
             </div>
         </div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <p class="text-muted fs-5">Gunakan menu di samping untuk mengelola data pendaftaran calon siswa.</p>
-                <hr>
-                <div class="alert alert-info border-0 shadow-sm">
-                    <strong>Informasi:</strong> Sidebar di sebelah kiri bersifat responsif. Anda dapat menyembunyikannya dengan menekan tombol <strong>☰ Menu</strong> di pojok kiri atas.
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-dark text-white fw-bold">
+                        📊 Rincian Pendaftar Berdasarkan Kelas
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <?php foreach ($semua_kelas as $kls): ?>
+                            <?php 
+                                // Jika kelas ada di database, ambil jumlahnya. Jika tidak, set 0.
+                                $jumlah_perkelas = isset($data_kelas[$kls]) ? $data_kelas[$kls] : 0; 
+                            ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                <span class="fw-semibold">Kelas <?= $kls ?></span>
+                                <span class="badge <?= $jumlah_perkelas > 0 ? 'bg-primary' : 'bg-secondary' ?> rounded-pill px-3 py-2">
+                                    <?= $jumlah_perkelas ?> Anak
+                                </span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary fw-bold mb-3">Panduan Admin</h5>
+                        <p class="text-muted fs-6">Gunakan menu di samping untuk mengelola data pendaftaran calon siswa secara keseluruhan.</p>
+                        
+                        <div class="alert alert-info border-0 shadow-sm mt-4">
+                            <strong>Informasi:</strong> Sidebar di sebelah kiri bersifat responsif. Anda dapat menyembunyikannya dengan menekan tombol <strong>☰ Menu</strong> di pojok kiri atas untuk memperluas area kerja.
+                        </div>
+
+                        <div class="alert alert-warning border-0 shadow-sm mt-3">
+                            <strong>Tips:</strong> Pastikan selalu mengecek menu <strong>Status Pendaftaran</strong> untuk memproses anak-anak yang masih berstatus "Sedang Diproses".
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
