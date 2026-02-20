@@ -81,6 +81,11 @@ $halaman_aktif = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
             <li>
+                <a href="pembagianKelompok.php" class="<?= ($halaman_aktif == 'pembagianKelompok.php') ? 'active border-start border-4 border-primary' : '' ?>">
+                    🧑‍🤝‍🧑 Pembagian Kelompok
+                </a>
+            </li>
+            <li>
                 <a href="logout.php" class="text-danger mt-5 border-top border-secondary">
                     🚪 Logout
                 </a>

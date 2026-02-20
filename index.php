@@ -8,7 +8,6 @@
 </head>
 <body class="bg-light">
 
-    <?php include 'layouts/navbar.php'; ?>  
 
 <div class="container mt-5">
     <div class="card shadow">
@@ -21,19 +20,29 @@
             <ul>
                 <li>Dilarang memalsukan data diri anak dan orang tua.</li>
                 <li>Dilarang mengunggah file foto atau dokumen yang tidak pantas.</li>
+                <li>Dilarang Membawa Handphone atau barang elektronik lainnya.</li>
+                <li>Dilarang Membawa mainan atau alat yang dapat melukai seseorang.</li>
+                <li>Tidak diperbolehkan jika keadaan Anak sedang sakit</li>
             </ul>
 
             <h4 class="text-warning mt-4">Syarat</h4>
             <ul>
-                <li>Calon peserta didik minimal kelas 3 SD dan maksimal 3 SMP.</li>
+                <li>Calon peserta didik minimal <b>Kelas 3 SD Sampai 3 SMP.</b></li>
                 <li>Menyiapkan pas foto atau dokumen identitas dalam format JPG/JPEG/PNG/PDF.</li>
                 <li>Ukuran file maksimal 5MB.</li>
+                <li>Kami hanya menerima pendaftaran sekitar <b>40 Anak</b></li>
+                <li>Link pendaftaran ditutup pada <b>Jumat, 06 Maret 2026</b></li>
+                <li>Adapun Infaq yang diperlukan sebesar <b>Rp 20.000</b></li>
             </ul>
 
             <h4 class="text-success mt-4">Ketentuan</h4>
             <ul>
                 <li>Data yang sudah disubmit tidak dapat diubah secara mandiri.</li>
                 <li>Panitia berhak membatalkan pendaftaran jika ditemukan ketidaksesuaian data.</li>
+                <li>Dibolehkan Membawa Snack dari rumah</li>
+                <li>Dibolehkan Membawa Alat Tulis & Alat Mandi</li>
+                <li>Dibolehkan Membawa Bantal, Guling, Selimut</li>
+                <li>Diwajibkan Membawa <b>Salinan Baju Ganti</b></li>
             </ul>
 
             <hr class="my-4">
