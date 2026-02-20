@@ -33,7 +33,13 @@ $total = $data_count['total_pendaftar'] ?? 0;
 
     <?php include '../layouts/sidebarAdmin.php'; ?>
 
-        <h2 class="text-primary mb-4">Selamat Datang di Dashboard!</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary mb-0">Selamat Datang di Dashboard!</h2>
+            
+            <a href="cetakKartu.php" target="_blank" class="btn btn-danger shadow-sm fw-bold">
+                📄 Export PDF Kartu Nama
+            </a>
+        </div>
 
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
