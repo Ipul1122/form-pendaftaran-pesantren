@@ -86,6 +86,16 @@ $halaman_aktif = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
             <li>
+                <a href="cetakKartu.php" class="<?= ($halaman_aktif == 'cetakKartu.php') ? 'active border-start border-4 border-primary' : '' ?>">
+                    🖨️ Cetak Kartu Peserta
+                </a>
+            </li>
+            <li>
+                <a href="estimasiForm.php" class="<?= ($halaman_aktif == 'estimasiForm.php') ? 'active border-start border-4 border-primary' : '' ?>">
+                    � Estimasi Form Pendaftaran
+                </a>
+            </li>
+            <li>
                 <a href="logout.php" class="text-danger mt-5 border-top border-secondary">
                     🚪 Logout
                 </a>
