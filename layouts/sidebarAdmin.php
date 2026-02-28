@@ -163,6 +163,11 @@ $is_games_active = in_array($halaman_aktif, $halaman_games);
                 </a>
             </li>
             <li>
+                <a href="verifikasiUser.php" class="nav-link-custom <?= ($halaman_aktif == 'verifikasiUser.php') ? 'active' : '' ?>">
+                    <span class="me-3">✅</span> Verifikasi Kehadiran
+                </a>
+            </li>
+            <li>
                 <a href="estimasiForm.php" class="nav-link-custom <?= ($halaman_aktif == 'estimasiForm.php') ? 'active' : '' ?>">
                     <span class="me-3">⚙️</span> Pengaturan Form
                 </a>
