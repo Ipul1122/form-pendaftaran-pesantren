@@ -17,8 +17,8 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Pecah array menjadi potongan berisi 3 data per halaman A4
-$chunks = array_chunk($data_anak, 3);
+// PERUBAHAN UTAMA: Ubah angka 6 menjadi 10 (2 kolom x 5 baris)
+$chunks = array_chunk($data_anak, 10);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -26,47 +26,54 @@ $chunks = array_chunk($data_anak, 3);
     <meta charset="UTF-8">
     <title>Cetak Kartu Peserta</title>
     <style>
-        /* Konfigurasi Ukuran Kertas A4 Portrait */
         @page {
             size: A4 portrait;
-            margin: 0;
+            margin: 0; /* Wajib 0 agar muat 10 kartu */
         }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background: #6c757d;
-            /* Memaksa background color ikut terprint */
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
-        /* Layout HVS/A4 di Layar */
+        
+        /* Layout Halaman A4 */
         .a4-page {
             width: 210mm;
             height: 297mm;
             background: white;
             margin: 10mm auto;
-            padding: 30mm 0; 
+            
+            /* GRID SYSTEM: 2 Kolom x 5 Baris */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 1fr); /* 5 Baris proporsional */
+            
+            justify-items: center;
+            align-items: center;
+            
+            /* Padding dan Gap yang diperketat agar muat */
+            padding: 10mm 5mm; 
+            row-gap: 2mm;      /* Jarak antar baris diperkecil */
+            column-gap: 5mm;   /* Jarak antar kolom */
+            
             box-sizing: border-box;
             page-break-after: always;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 20mm; /* Jarak antar 3 kartu */
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
         }
-        /* Menghilangkan margin dan shadow saat mode Print */
+
         @media print {
             body { background: white; margin: 0; }
-            .a4-page { margin: 0; box-shadow: none; border: none; }
+            .a4-page { margin: 0; box-shadow: none; border: none; height: 296mm; /* Sedikit dikurangi dari 297mm untuk mencegah auto page-break */ width: 100%; }
         }
         
-        /* Spesifikasi Kartu Nama: 90 x 55 mm */
+        /* Kartu Nama (Ukuran Tetap 90x55mm) */
         .kartu {
             width: 90mm;
-            height: 55mm;
-            border: 1.5px dashed #888; /* Garis panduan gunting */
+            height: 54mm; /* Dikurangi 1mm untuk keamanan layout */
+            border: 1px dashed #bbb;
             border-radius: 4px;
             box-sizing: border-box;
             display: flex;
@@ -74,54 +81,71 @@ $chunks = array_chunk($data_anak, 3);
             overflow: hidden;
             background: linear-gradient(135deg, #ffffff, #f1f8ff);
         }
+
         /* Bagian Kiri (Foto) */
         .foto-container {
-            width: 35mm;
+            width: 28mm;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #198754; /* Hijau pesantren */
+            background: #198754; 
             border-right: 3px solid #146c43;
         }
         .foto-container img {
-            width: 25mm;
-            height: 35mm;
+            width: 22mm;
+            height: 30mm;
             object-fit: cover;
             border: 2px solid white;
             border-radius: 4px;
             background: white;
         }
-        /* Bagian Kanan (Data Teks) */
+
+        /* Bagian Kanan (Data) */
         .data-container {
-            width: 55mm;
-            padding: 4mm 5mm;
+            flex: 1;
+            padding: 2mm 3mm; /* Padding diperkecil sedikit */
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
         .header-kartu {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 900;
             color: #198754;
-            text-align: center;
+            text-align: left;
             border-bottom: 2px solid #198754;
-            padding-bottom: 2mm;
-            margin-bottom: 3mm;
+            padding-bottom: 1mm;
+            margin-bottom: 1.5mm;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         .nama {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
-            margin: 0 0 2mm 0;
+            margin-bottom: 1.5mm;
             color: #212529;
-            line-height: 1.2;
+            line-height: 1.1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         .detail {
-            font-size: 10px;
-            margin: 0 0 1.5mm 0;
+            font-size: 8px;
+            margin-bottom: 0.5mm;
             color: #495057;
+        }
+        
+        .badge-kelompok {
+            display: inline-block;
+            background: #ffc107;
+            color: #000;
+            padding: 0px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 7px;
         }
     </style>
 </head>
@@ -136,14 +160,11 @@ $chunks = array_chunk($data_anak, 3);
             
             <?php foreach ($halaman as $anak): ?>
                 <?php 
-                    // Set foto, jika kosong atau error beri foto default
                     $foto_path = "../user/uploads/" . htmlspecialchars($anak['foto']);
                     if (!file_exists($foto_path) || empty($anak['foto'])) {
                         $foto_path = "https://via.placeholder.com/100x140?text=FOTO"; 
                     }
-                    
-                    // Cek jika kolom kelompok sudah ada nilainya
-                    $kelompok = (isset($anak['kelompok']) && $anak['kelompok'] > 0) ? $anak['kelompok'] : 'Belum Dibagi';
+                    $kelompok = (isset($anak['kelompok']) && $anak['kelompok'] > 0) ? $anak['kelompok'] : '-';
                 ?>
                 
                 <div class="kartu">
@@ -151,10 +172,13 @@ $chunks = array_chunk($data_anak, 3);
                         <img src="<?= $foto_path ?>" alt="Foto">
                     </div>
                     <div class="data-container">
-                        <div class="header-kartu">PESANTREN RAMADHAN</div>
+                        <div class="header-kartu">Pesantren Ramadhan</div>
                         <div class="nama"><?= htmlspecialchars($anak['nama_anak']) ?></div>
                         <div class="detail"><strong>Kelas:</strong> <?= htmlspecialchars($anak['kelas']) ?></div>
-                        <div class="detail"><strong>Kelompok:</strong> <?= htmlspecialchars($kelompok) ?></div>
+                        <div class="detail">
+                            <strong>Kelompok:</strong> 
+                            <span class="badge-kelompok"><?= htmlspecialchars($kelompok) ?></span>
+                        </div>
                         <div class="detail"><strong>ID:</strong> P-<?= sprintf("%04d", $anak['id']) ?></div>
                     </div>
                 </div>
