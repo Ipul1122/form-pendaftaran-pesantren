@@ -6,12 +6,14 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 require_once '../config/config.php';
 
-// Proses Aksi (Ubah Status & Hapus)
+// Proses Aksi (Ubah Status, Hapus, & Himbauan)
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $action = $_GET['action'];
     
-    // Jika aksi adalah DELETE (Hapus)
+    // =========================================================================
+    // AKSI 1: HAPUS DATA
+    // =========================================================================
     if ($action == 'delete') {
         // 1. Ambil nama file foto dari database untuk dihapus dari folder
         $stmt_foto = $conn->prepare("SELECT foto FROM pendaftar WHERE id = ?");
@@ -21,7 +23,6 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         
         if ($row_foto = $res_foto->fetch_assoc()) {
             $path_foto = "../user/uploads/" . $row_foto['foto'];
-            // Cek apakah file benar-benar ada, lalu hapus
             if (file_exists($path_foto) && is_file($path_foto)) {
                 unlink($path_foto); 
             }
@@ -32,11 +33,47 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $stmt_del->bind_param("i", $id);
         $stmt_del->execute();
         
-        // Redirect kembali
         header("Location: statusPendaftaran.php");
         exit;
     } 
-    // Jika aksi adalah Ubah Status (Terima / Tolak / Proses)
+    
+    // =========================================================================
+    // AKSI 2: KIRIM HIMBAUAN (WHATSAPP) - TANPA UBAH STATUS
+    // =========================================================================
+    elseif ($action == 'himbauan') {
+        $stmt_get = $conn->prepare("SELECT nama_anak, no_telpon FROM pendaftar WHERE id = ?");
+        $stmt_get->bind_param("i", $id);
+        $stmt_get->execute();
+        $res = $stmt_get->get_result();
+
+        if ($row_user = $res->fetch_assoc()) {
+            $nama_anak = $row_user['nama_anak'];
+            
+            // Format Nomor Telepon (08xx -> 628xx)
+            $no_hp = preg_replace('/[^0-9]/', '', $row_user['no_telpon']); 
+            if (substr($no_hp, 0, 1) == '0') {
+                $no_hp = '62' . substr($no_hp, 1);
+            }
+
+            // Pesan Himbauan (Gunakan %0a untuk baris baru di URL, atau biarkan urlencode yang menangani)
+            $pesan = "Assalamualaikum wr wb halo ananda *$nama_anak*, kami dari panitia Pesantren Ramadhan mengingatkan kembali untuk jangan lupa membawa perlengkapan berikut:\n\n"
+                    . "1. Hadir pada hari Sabtu, 7 Maret 2026 pada pukul 16:00\n"
+                    . "2. Uang Infaq Rp 20.000 diserahkan ketika hadir\n"
+                    . "3. Dibolehkan membawa alat tidur\n"
+                    . "4. Dibolehkan membawa snack\n"
+                    . "5. Membawa baju ganti\n\n"
+                    . "Sampai jumpa di lokasi!";
+
+            // Redirect ke API WhatsApp
+            $wa_url = "https://api.whatsapp.com/send?phone=" . $no_hp . "&text=" . urlencode($pesan);
+            header("Location: " . $wa_url);
+            exit;
+        }
+    }
+
+    // =========================================================================
+    // AKSI 3: UBAH STATUS (TERIMA / TOLAK / PROSES)
+    // =========================================================================
     else {
         $status_baru = 'proses';
         if ($action == 'terima') $status_baru = 'diterima';
@@ -65,7 +102,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
                 // Tentukan Pesan
                 if ($action == 'terima') {
-                    $pesan = "Selamat anak anda dengan nama $nama_anak, diterima di pesantren ramadhan pada tanggal 07 - 08  Maret 2026 dengan infaq yang disediakan 20.000 Rp ketika hadir di pesantren pada pukul 16:00";
+                    $pesan = "Selamat anak anda dengan nama $nama_anak, diterima di pesantren ramadhan pada tanggal 07 - 08 Maret 2026 dengan infaq yang disediakan 20.000 Rp ketika hadir di pesantren pada pukul 16:00";
                 } else {
                     $pesan = "Maaf anak anda belum bisa kami terima di pesantren ramadhan 2026";
                 }
@@ -145,15 +182,22 @@ $result = $conn->query("SELECT * FROM pendaftar ORDER BY id DESC");
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group shadow-sm" role="group">
-                                        <a href="?action=terima&id=<?= $row['id'] ?>" target="_blank" onclick="setTimeout(function(){ window.location.reload(); }, 1000);" class="btn btn-sm btn-outline-success">Terima</a>
-                                        <a href="?action=tolak&id=<?= $row['id'] ?>" target="_blank" onclick="setTimeout(function(){ window.location.reload(); }, 1000);" class="btn btn-sm btn-outline-warning">Tolak</a>
-                                        <a href="?action=proses&id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-secondary">Proses</a>
+                                    <div class="d-flex flex-column gap-2">
+                                        
+                                        <a href="?action=himbauan&id=<?= $row['id'] ?>" target="_blank" class="btn btn-sm btn-info text-white fw-bold shadow-sm">
+                                            📢 Himbauan
+                                        </a>
+
+                                        <div class="btn-group shadow-sm" role="group">
+                                            <a href="?action=terima&id=<?= $row['id'] ?>" target="_blank" onclick="setTimeout(function(){ window.location.reload(); }, 1000);" class="btn btn-sm btn-outline-success">Terima</a>
+                                            <a href="?action=tolak&id=<?= $row['id'] ?>" target="_blank" onclick="setTimeout(function(){ window.location.reload(); }, 1000);" class="btn btn-sm btn-outline-warning">Tolak</a>
+                                            <a href="?action=proses&id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-secondary">Proses</a>
+                                        </div>
+                                        
+                                        <a href="?action=delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus permanen data <?= htmlspecialchars($row['nama_anak']) ?>? Foto juga akan terhapus.');">
+                                            Hapus
+                                        </a>
                                     </div>
-                                    
-                                    <a href="?action=delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Apakah Anda yakin ingin menghapus permanen data <?= htmlspecialchars($row['nama_anak']) ?>? Foto juga akan terhapus.');">
-                                        Hapus
-                                    </a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
