@@ -120,8 +120,17 @@ $chunks = array_chunk($data_anak, 10);
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
+
+        .tema {
+            font-size: 6px;
+            color: #000000;
+            text-align: left;
+            margin-top: 1px;
+            font-weight: normal;
+            text-transform: capitalize;
+        }
         .nama {
-            font-size: 11px;
+            font-size: 1rem;
             font-weight: bold;
             text-transform: uppercase;
             margin-bottom: 1.5mm;
@@ -133,8 +142,8 @@ $chunks = array_chunk($data_anak, 10);
             overflow: hidden;
         }
         .detail {
-            font-size: 8px;
-            margin-bottom: 0.5mm;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
             color: #495057;
         }
         
@@ -172,7 +181,11 @@ $chunks = array_chunk($data_anak, 10);
                         <img src="<?= $foto_path ?>" alt="Foto">
                     </div>
                     <div class="data-container">
-                        <div class="header-kartu">Pesantren Ramadhan</div>
+                        <div class="header-kartu">Pesantren Ramadhan 1447 H / 2026 M
+                            <div class="tema">
+                                "Al-Quran sebagai Pedoman Hidup Apapun Zamannya"
+                            </div>
+                        </div>
                         <div class="nama"><?= htmlspecialchars($anak['nama_anak']) ?></div>
                         <div class="detail"><strong>Kelas:</strong> <?= htmlspecialchars($anak['kelas']) ?></div>
                         <div class="detail">
