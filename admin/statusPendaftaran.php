@@ -61,7 +61,8 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                     . "2. Uang Infaq Rp 20.000 diserahkan ketika hadir\n"
                     . "3. Dibolehkan membawa alat tidur\n"
                     . "4. Dibolehkan membawa snack\n"
-                    . "5. Membawa baju ganti\n\n"
+                    . "5. Membawa Iqro atau Al-Qur'an\n"
+                    . "6. Membawa baju ganti\n\n"
                     . "Sampai jumpa di lokasi!";
 
             // Redirect ke API WhatsApp
