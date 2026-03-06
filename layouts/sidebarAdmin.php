@@ -174,6 +174,12 @@ $is_games_active = in_array($halaman_aktif, $halaman_games);
             </li>
 
             <li>
+                <a href="cerdasCermat/easy.php" class="nav-link-custom <?= ($halaman_aktif == 'cerdasCermat/easy.php') ? 'active' : '' ?>">
+                    <span class="me-3">⚙️</span> Easy mode
+                </a>
+            </li>
+
+            <li>
                 <a href="#gamesMenu" data-bs-toggle="collapse" aria-expanded="<?= $is_games_active ? 'true' : 'false' ?>" class="nav-link-custom dropdown-toggle <?= $is_games_active ? 'active' : '' ?>">
                     <span class="me-3">🎮</span> Games
                 </a>
