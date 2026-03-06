@@ -160,6 +160,10 @@ $json_questions = json_encode($questions);
     <audio id="soundAlarm">
         <source src="../../audio/electronic-alarm-clock-buzz-sfx-sound-effect-17-audiotrimmer.mp3" type="audio/mpeg">
     </audio>
+    
+    <audio id="soundCorrect">
+        <source src="../../audio/correct.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="container-fluid py-4">
         
@@ -274,6 +278,7 @@ $json_questions = json_encode($questions);
     // === AUDIO ELEMENTS ===
     const audioTick = document.getElementById('soundTick');
     const audioAlarm = document.getElementById('soundAlarm');
+    const audioCorrect = document.getElementById('soundCorrect');
 
     // === FUNGSI KONTROL AUDIO ===
     function playTick() {
@@ -292,10 +297,22 @@ $json_questions = json_encode($questions);
         audioAlarm.play().catch(e => console.log("Audio Error:", e));
     }
 
+    function playCorrect() {
+        // Jangan stop alarm jika ingin suara overlap (opsional), 
+        // tapi biasanya lebih bersih jika alarm stop saat jawaban muncul.
+        // Uncomment baris di bawah jika ingin Alarm mati saat jawaban muncul:
+        // stopAllAudio(); 
+        
+        audioCorrect.currentTime = 0;
+        audioCorrect.play().catch(e => console.log("Audio Error:", e));
+    }
+
     function stopAllAudio() {
         stopTick();
         audioAlarm.pause();
         audioAlarm.currentTime = 0;
+        audioCorrect.pause();
+        audioCorrect.currentTime = 0;
     }
 
     // === CEK STORAGE SAAT LOAD ===
@@ -323,12 +340,11 @@ $json_questions = json_encode($questions);
     }
 
     function loadQuestion() {
-        // Stop audio dari soal sebelumnya (jika ada)
         stopAllAudio();
 
         localStorage.setItem(STORAGE_KEY, currentQIndex);
 
-        // Reset Tampilan UI
+        // Reset UI
         nextBtn.style.display = 'none';
         skipBtn.style.display = 'inline-block';
         skipBtn.disabled = false;
@@ -337,7 +353,6 @@ $json_questions = json_encode($questions);
         timerFill.style.backgroundColor = '#198754';
         timerText.innerText = TIME_LIMIT;
         
-        // Load Data Soal
         let q = questions[currentQIndex];
         questionText.innerText = q.question;
         questionCounter.innerText = `Soal ${currentQIndex + 1} / ${questions.length}`;
@@ -359,24 +374,20 @@ $json_questions = json_encode($questions);
             timeLeft--;
             timerText.innerText = timeLeft;
             
-            // Animasi Bar
             let percentage = (timeLeft / TIME_LIMIT) * 100;
             timerFill.style.width = percentage + "%";
 
             // LOGIKA AUDIO
-            // 1. Mulai berdetak di detik ke-20
             if (timeLeft === 20) {
                 playTick();
-                timerFill.style.backgroundColor = '#ffc107'; // Kuning
+                timerFill.style.backgroundColor = '#ffc107'; 
             }
             
-            // 2. Berhenti berdetak dan bunyikan alarm di detik ke-5
             if (timeLeft === 5) {
                 playAlarm();
-                timerFill.style.backgroundColor = '#dc3545'; // Merah
+                timerFill.style.backgroundColor = '#dc3545'; 
             }
 
-            // WAKTU HABIS (0 Detik)
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 revealAnswer();
@@ -385,18 +396,17 @@ $json_questions = json_encode($questions);
     }
 
     function revealAnswer() {
-        // Jika waktu habis, alarm mungkin masih bunyi, biarkan saja sampai user klik next
-        // Tapi jika user skip sebelum 0, kita harus stop audio manual di fungsi nextQuestion
-        
         let correctIndex = questions[currentQIndex].answer;
         optionsBtn[correctIndex].classList.add('correct-answer');
+        
+        // Mainkan suara Correct
+        playCorrect();
         
         skipBtn.style.display = 'none';
         nextBtn.style.display = 'inline-block';
     }
 
     function nextQuestion() {
-        // STOP semua audio ketika pindah soal atau skip
         stopAllAudio();
         clearInterval(timerInterval);
 
@@ -421,7 +431,6 @@ $json_questions = json_encode($questions);
         }
     }
 
-    // === UTILS ===
     function fixSidebarLinks() {
         const sidebarLinks = document.querySelectorAll('#sidebar a');
         sidebarLinks.forEach(link => {

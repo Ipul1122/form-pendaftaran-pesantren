@@ -180,6 +180,18 @@ $is_games_active = in_array($halaman_aktif, $halaman_games);
             </li>
 
             <li>
+                <a href="cerdasCermat/medium.php" class="nav-link-custom <?= ($halaman_aktif == 'cerdasCermat/medium.php') ? 'active' : '' ?>">
+                    <span class="me-3">⚙️</span> medium mode
+                </a>
+            </li>
+
+            <li>
+                <a href="cerdasCermat/hard.php" class="nav-link-custom <?= ($halaman_aktif == 'cerdasCermat/hard.php') ? 'active' : '' ?>">
+                    <span class="me-3">⚙️</span> Hard mode
+                </a>
+            </li>
+
+            <li>
                 <a href="#gamesMenu" data-bs-toggle="collapse" aria-expanded="<?= $is_games_active ? 'true' : 'false' ?>" class="nav-link-custom dropdown-toggle <?= $is_games_active ? 'active' : '' ?>">
                     <span class="me-3">🎮</span> Games
                 </a>
@@ -231,3 +243,5 @@ $is_games_active = in_array($halaman_aktif, $halaman_games);
         </nav>
         
         <div class="container-fluid px-4 pb-5">
+
+
